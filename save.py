@@ -18,8 +18,8 @@ from lightning.pytorch.loggers import WandbLogger
 from omegaconf import DictConfig, OmegaConf
 import hydra, wandb, os, sys
 from hydra.core.hydra_config import HydraConfig
-from scripts.network.dataloader_flow4D import HDF5Dataset
-from scripts.pl_model_flow4D import ModelWrapper
+from scripts.network.dataloader_mambaflow import HDF5Dataset
+from scripts.pl_model_mambaflow import ModelWrapper
 from scripts.utils import bc
 
 

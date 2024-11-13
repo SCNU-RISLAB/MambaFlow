@@ -1,4 +1,3 @@
-
 dataset_path: /home/kin/data/av2/preprocess/sensor
 checkpoint: /home/kin/model_zoo/deflow.ckpt
 av2_mode: val # [val, test]

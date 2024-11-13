@@ -1,21 +1,15 @@
-dataset_path: /data/jiehao/dataset/deflow/demo_data/av2/preprocess_v2/sensor/train
-#dataset_path: /data/jiehao/dataset/deflow/av2/preprocess/sensor/test
-
-#flow4d
-checkpoint: /data/jiehao/project/Flow4D/logs/wandb/1020_032637/checkpoints/16__0.157_0.008_0.018_0.041_0.002_0.010_0.85.ckpt
+dataset_path: /data/jiehao/dataset/deflow/demo_data/av2/preprocess_v2/sensor/vis
 
 
+checkpoint:
+res_name: mambaflow_best
 
-
-#checkpoint: /data/jiehao/project/Flow4D/logs/wandb/1014_034938/checkpoints/14__0.162_0.008_0.018_0.042_0.002_0.010_0.86.ckpt
-res_name: flow4d_best
-
-loss_fn: mambaflowLoss_v3
+loss_fn: mambaflowLoss
 
 # no need to change
 defaults:
   - hydra: default
-  - model: flow4D
+  - model: mambaflow
 seed: 42069
 gpus: 1
 slurm_id: 00000

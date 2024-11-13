@@ -22,14 +22,13 @@ from omegaconf import DictConfig, OmegaConf
 import hydra, os
 from pathlib import Path
 
-from scripts.network.dataloader_flow4D import HDF5Dataset, collate_fn_pad
+from scripts.network.dataloader_mambaflow import HDF5Dataset, collate_fn_pad
 
-
-
-from scripts.pl_model_flow4D import ModelWrapper
+from scripts.pl_model_mambaflow import ModelWrapper
 
 from datetime import datetime
 from torch.utils.data.dataset import random_split
+
 
 @hydra.main(version_base=None, config_path="conf", config_name="config_flow4D")
 def main(cfg):
@@ -37,40 +36,39 @@ def main(cfg):
     current_time = datetime.now().strftime("%m%d_%H%M%S")
     cfg.output = current_time
     output_dir = os.path.join('logs/wandb', current_time)
-    print('output_dir = {}'.format(output_dir)) 
+    print('output_dir = {}'.format(output_dir))
     print('val_check = {}'.format(cfg.val_every))
     print('monitor={}'.format(cfg.model.val_monitor))
 
     if cfg.dataset == "Waymo":
-        from scripts.pl_model_flow4D_waymo import ModelWrapper
+        pass
     elif cfg.dataset == "Argoverse2":
-        from scripts.pl_model_flow4D import ModelWrapper
+        from scripts.pl_model_mambaflow import ModelWrapper
     else:
         raise ValueError(f"Dataset '{cfg.dataset}' is not supported. Please choose either 'Waymo' or 'Argoverse2'.")
 
-
-    if cfg.debug == True: 
-        train_dataset = HDF5Dataset(cfg.dataset_path + "/train_debug", cfg.num_frames) 
+    if cfg.debug == True:
+        train_dataset = HDF5Dataset(cfg.dataset_path + "/train_debug", cfg.num_frames)
         val_dataset = HDF5Dataset(cfg.dataset_path + "/val", cfg.num_frames)
         cfg.num_workers = 1
         total_size = len(val_dataset)
-        subset_size = total_size // 100 
+        subset_size = total_size // 100
         _, val_dataset = random_split(val_dataset, [total_size - subset_size, subset_size])
         print('debug mode')
     else:
         train_dataset = HDF5Dataset(cfg.dataset_path + "/train", cfg.num_frames)
         val_dataset = HDF5Dataset(cfg.dataset_path + "/val", cfg.num_frames)
         print('full training mode')
-    
+
     # count gpus, overwrite gpus
     cfg.gpus = torch.cuda.device_count() if torch.cuda.is_available() else 0
 
     train_loader = DataLoader(train_dataset,
-                            batch_size=cfg.batch_size,
-                            shuffle=True,
-                            num_workers=cfg.num_workers,
-                            collate_fn=collate_fn_pad,
-                            pin_memory=True)
+                              batch_size=cfg.batch_size,
+                              shuffle=True,
+                              num_workers=cfg.num_workers,
+                              collate_fn=collate_fn_pad,
+                              pin_memory=True)
 
     val_loader = DataLoader(val_dataset,
                             batch_size=cfg.batch_size,
@@ -79,9 +77,8 @@ def main(cfg):
                             collate_fn=collate_fn_pad,
                             pin_memory=True)
 
-    
     Path(os.path.join(output_dir, "checkpoints")).mkdir(parents=True, exist_ok=True)
-    
+
     cfg = DictConfig(OmegaConf.to_container(cfg, resolve=True))
     model = ModelWrapper(cfg)
 
@@ -96,7 +93,6 @@ def main(cfg):
         ),
         LearningRateMonitor(logging_interval="epoch")
     ]
-
 
     wandb_logger = WandbLogger(save_dir=output_dir,
                                entity="20228132034-south-china-normal-university",
@@ -117,16 +113,17 @@ def main(cfg):
                          max_epochs=cfg.epochs,
                          sync_batchnorm=cfg.sync_bn)
 
-    
     wandb_logger.watch(model, log_graph=False)
     if trainer.global_rank == 0:
-        print("\n"+"-"*40)
+        print("\n" + "-" * 40)
         print("Initiating wandb and trainer successfully.  ^V^ ")
-        print(f"We will use {cfg.gpus} GPUs to train the model. Check the checkpoints in {output_dir} checkpoints folder.")
+        print(
+            f"We will use {cfg.gpus} GPUs to train the model. Check the checkpoints in {output_dir} checkpoints folder.")
         print("Total Train Dataset Size: ", len(train_dataset))
-        print("-"*40+"\n")
+        print("-" * 40 + "\n")
 
-    trainer.fit(model, train_dataloaders = train_loader, val_dataloaders = val_loader, ckpt_path = cfg.checkpoint)
+    trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=val_loader, ckpt_path=cfg.checkpoint)
+
 
 if __name__ == "__main__":
     main()

@@ -21,3 +21,5 @@ cancel.sh
 # figure
 *.png
 *.pdf
+
+assets/cuda/*

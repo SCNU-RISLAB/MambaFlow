@@ -41,23 +41,7 @@ def mambaflowLoss(res_dict):
 
     # 找出第一个占比小于阈值的柱子
     first_below_threshold = next((i for i, prop in enumerate(proportions) if prop < proportion_threshold), None)
-    if first_below_threshold is None:
-        # with open('/data/jiehao/project/Flow4D/Module_test/velocities_error_v3.csv', 'w') as f:
-        #     for v in velocities:
-        #         f.write(f"{v}\n")
-        for key, value in res_dict.items():
-            res_dict[key] = value.tolist()
-
-        # 将字典写入 JSON 文件
-        with open('/data/jiehao/project/Flow4D/Module_test/data.json', 'w') as f:
-            json.dump(res_dict, f)
-
-        raise ValueError(1)
-        #turning_speed = 0
-    else:
-        turning_speed = bin_centers[first_below_threshold]
-
-    # print(turning_speed)
+    turning_speed = bin_centers[first_below_threshold]
 
     weight_loss = 0.0
     speed_mid = 2

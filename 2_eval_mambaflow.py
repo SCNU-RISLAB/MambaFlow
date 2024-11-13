@@ -16,9 +16,10 @@ from lightning.pytorch.loggers import WandbLogger
 from omegaconf import DictConfig, OmegaConf
 import hydra, wandb, os, sys
 from hydra.core.hydra_config import HydraConfig
-from scripts.network.dataloader_flow4D import HDF5Dataset
-from scripts.pl_model_flow4D import ModelWrapper
+from scripts.network.dataloader_mambaflow import HDF5Dataset
+from scripts.pl_model_mambaflow import ModelWrapper
 from datetime import datetime
+
 
 @hydra.main(version_base=None, config_path="conf", config_name="eval_flow4D")
 def main(cfg):
@@ -33,10 +34,9 @@ def main(cfg):
     else:
         raise ValueError(f"Invalid value for cfg.av2_mode: {cfg.av2_mode}")
 
-
     parts = cfg.checkpoint.split('/')
     wandb_index = parts.index('wandb')
-    relevant_parts = parts[wandb_index + 1:-1] 
+    relevant_parts = parts[wandb_index + 1:-1]
 
     file_parts = parts[-1].split('.')[0].split('_')
     save_folder = f"{relevant_parts[0]}_{file_parts[0]}_{file_parts[1]}"
@@ -44,11 +44,11 @@ def main(cfg):
     output_dir = os.path.join('/data/jiehao/MambaFlow_bucket/results', save_folder)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-    
+
     if not os.path.exists(cfg.checkpoint):
         print(f"Checkpoint {cfg.checkpoint} does not exist. Need checkpoints for evaluation.")
         sys.exit(1)
-    
+
     checkpoint_params = DictConfig(torch.load(cfg.checkpoint)["hyper_parameters"])
 
     cfg.output = save_folder
@@ -56,9 +56,12 @@ def main(cfg):
     mymodel = ModelWrapper.load_from_checkpoint(cfg.checkpoint, cfg=cfg, eval=True)
 
     trainer = pl.Trainer(devices=1)
-    trainer.validate(model = mymodel, \
-                     dataloaders = DataLoader(HDF5Dataset(cfg.dataset_path + f"/{cfg.av2_mode}", n_frames=cfg.num_frames, eval=True), batch_size=1, shuffle=False))
+    trainer.validate(model=mymodel, \
+                     dataloaders=DataLoader(
+                         HDF5Dataset(cfg.dataset_path + f"/{cfg.av2_mode}", n_frames=cfg.num_frames, eval=True),
+                         batch_size=1, shuffle=False))
     wandb.finish()
+
 
 if __name__ == "__main__":
     main()
