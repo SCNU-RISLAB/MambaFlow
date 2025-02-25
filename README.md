@@ -1,5 +1,7 @@
 # MambaFlow: A Novel and Flow-guided State Space Model for Scene Flow Estimation
 
+[![arXiv](https://img.shields.io/badge/arXiv-2502.16907-b31b1b?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2502.16907) 
+
 ## Requirements
 
 This code is based on Flow4D. <br>
