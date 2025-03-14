@@ -4,7 +4,9 @@
 
 ## Notice
 
-**This repository has been merged into a new repository.** For the latest features, updates, and developments, please visit [OpenSceneFlow](https://github.com/KTH-RPL/OpenSceneFlow). All future development work will be conducted in the new repository.
+**This repository has been merged into a new repository.** For the latest features, updates, and developments, please visit [OpenSceneFlow](https://github.com/KTH-RPL/OpenSceneFlow). 
+
+All future development work will be conducted in the new repository.
 
 ## Requirements
 
