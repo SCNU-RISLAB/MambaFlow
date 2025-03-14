@@ -2,7 +2,7 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-2502.16907-b31b1b?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2502.16907) 
 
-## Note
+## Notice
 
 **This repository has been merged into a new repository.** For the latest features, updates, and developments, please visit [OpenSceneFlow](https://github.com/KTH-RPL/OpenSceneFlow). All future development work will be conducted in the new repository.
 
